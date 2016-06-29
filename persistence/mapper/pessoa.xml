@@ -1,0 +1,181 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="pessoa">
+    
+    <insert id="add" useGeneratedKeys="true" keyProperty="pes_id" keyColumn="pes_id">
+        insert 
+        into core.pessoa
+        (pes_cod,pes_nome,pes_nome_fant,pes_insc_feder,pes_insc_estad,
+        pes_insc_munic,pes_end_logra,pes_end_num,pes_end_comp,pes_end_cep,
+        pes_end_bairro,pes_end_munic,pes_end_uf,pes_email,pes_tel,pes_dt_cad,
+        pes_dt_alt)
+        values
+        (#{pes_cod},#{pes_nome},#{pes_nome_fant},#{pes_insc_feder},
+        #{pes_insc_estad},#{pes_insc_munic},#{pes_end_logra},#{pes_end_num},
+        #{pes_end_comp},#{pes_end_cep},#{pes_end_bairro},#{pes_end_munic},
+        #{pes_end_uf},#{pes_email},#{pes_tel},now(),now())
+    </insert>
+    
+    <insert id="addLoja" useGeneratedKeys="true" keyColumn="loja_id" keyProperty="loja_id">
+        insert 
+        into core.loja
+        (loja_cod,loja_pes_id,loja_dt_cad,loja_dt_alt)
+        values
+        (#{loja_cod}::character varying,#{loja_pes_id},now(),now())
+    
+    </insert>
+    
+    <update id="altLoja">
+        update 
+        core.loja
+        set
+        LOJA_COD = #{loja_cod}::character varying,
+        LOJA_PES_ID = #{loja_pes_id},
+        LOJA_DT_ALT = current_timestamp
+        where
+        LOJA_COD = #{loja_cod}::character varying
+    </update>
+    
+     <update id="update">
+        update 
+        core.pessoa
+        set
+        pes_cod = #{pes_cod},
+        pes_nome = #{pes_nome},
+        pes_nome_fant =	#{pes_nome_fant},
+        pes_insc_feder = #{pes_insc_feder},
+        pes_insc_estad = #{pes_insc_estad},
+        pes_insc_munic = #{pes_insc_munic},
+        pes_end_logra =	#{pes_end_logra},
+        pes_end_num = #{pes_end_num},
+        pes_end_comp = #{pes_end_comp},
+        pes_end_cep = #{pes_end_cep},
+        pes_end_bairro = #{pes_end_bairro},
+        pes_end_munic =	#{pes_end_munic},
+        pes_end_uf = #{pes_end_uf},
+        pes_email =	#{pes_email},
+        pes_tel = #{pes_tel},
+        pes_dt_cad = #{pes_dt_cad},
+        pes_dt_alt = #{pes_dt_alt}
+        where
+        pes_id = #{pes_id}
+    </update>
+    
+    <delete id="delete">
+        
+        delete
+        from core.loja
+        where
+        loja_pes_id = #{pes_id};
+        
+        delete
+        from core.pessoa
+        where
+        pes_id = #{pes_id};
+    </delete>
+
+    <select id="find" resultMap="pessoa">
+        select
+        *
+        from
+        core.pessoa
+        <where>
+            <if test = "pes_id != null">
+                pes_id = #{pes_id}
+            </if>
+        </where>
+        limit 100
+    </select>
+    
+    <select id="getId" resultType = "long">
+        select 
+        pes_id
+        from
+        core.pessoa p
+        left join core.loja l on loja_pes_id = pes_id
+        where
+        p.pes_id = #{pes_id}
+        or p.pes_insc_feder = #{pes_insc_feder}
+        or l.loja_cod = #{loja_cod}
+    </select>
+    
+    <select id="getLojaId" resultType = "long">
+        select
+        loja_id
+        from
+        core.loja
+        where
+        loja_pes_id = #{loja_pes_id}
+        or loja_cod = #{loja_cod}::character varying
+        
+    </select>
+
+    <resultMap id="pessoa" type="Map">
+        <id property="pes_id" column="pes_id"/>
+        <result property="pes_cod" column="pes_cod"/>
+        <result property="pes_nome" column="pes_nome"/>
+        <result property="pes_nome_fant" column="pes_nome_fant"/>
+        <result property="pes_insc_feder" column="pes_insc_feder"/>
+        <result property="pes_insc_estad" column="pes_insc_estad"/>
+        <result property="pes_insc_munic" column="pes_insc_munic"/>
+        <result property="pes_end_logra" column="pes_end_logra"/>
+        <result property="pes_end_num" column="pes_end_num"/>
+        <result property="pes_end_comp" column="pes_end_comp"/>
+        <result property="pes_end_cep" column="pes_end_cep"/>
+        <result property="pes_end_bairro" column="pes_end_bairro"/>
+        <result property="pes_end_munic" column="pes_end_munic"/>
+        <result property="pes_end_uf" column="pes_end_uf"/>
+        <result property="pes_email" column="pes_email"/>
+        <result property="pes_tel" column="pes_tel"/>
+        <result property="pes_dt_cad" column="pes_dt_cad"/>
+        <result property="pes_dt_alt" column="pes_dt_alt"/>
+    </resultMap>
+
+    <!-- EDITANDO (AINDA ESTÁ SENDO TESTADO!!) -->
+    
+    <select id="selectPesLoja" resultMap="pessoa_loja">
+        SELECT * FROM core.pessoa INNER JOIN core.loja 
+        ON (core.pessoa.pes_id = core.loja.loja_pes_id) 
+        <where>
+           <if test="ctr_ult_alt != null">
+             and core.pessoa.pes_dt_alt > 
+             CAST(#{ctr_ult_alt} AS TIMESTAMP WITHOUT TIME ZONE)
+           </if>
+        </where>
+        ORDER BY core.pessoa.pes_dt_alt
+        <if test="ctr_max_rows != null">
+           limit #{ctr_max_rows}
+        </if>
+    </select>
+    
+    <resultMap id="pessoa_loja" type="Map">
+        <id property="pes_id" column="pes_id"/>
+        <result property="pes_cod" column="pes_cod"/>
+        <result property="pes_nome" column="pes_nome"/>
+        <result property="pes_nome_fant" column="pes_nome_fant"/>
+        <result property="pes_insc_feder" column="pes_insc_feder"/>
+        <result property="pes_insc_estad" column="pes_insc_estad"/>
+        <result property="pes_insc_munic" column="pes_insc_munic"/>
+        <result property="pes_end_logra" column="pes_end_logra"/>
+        <result property="pes_end_num" column="pes_end_num"/>
+        <result property="pes_end_comp" column="pes_end_comp"/>
+        <result property="pes_end_cep" column="pes_end_cep"/>
+        <result property="pes_end_bairro" column="pes_end_bairro"/>
+        <result property="pes_end_munic" column="pes_end_munic"/>
+        <result property="pes_end_uf" column="pes_end_uf"/>
+        <result property="pes_email" column="pes_email"/>
+        <result property="pes_tel" column="pes_tel"/>
+        <result property="pes_dt_cad" column="pes_dt_cad"/>
+        <result property="pes_dt_alt" column="pes_dt_alt"/>
+        <association property="pes_loja" javaType="Map">
+           <id property="loja_id" column="loja_id"/>
+           <result property="loja_cod" column="loja_cod"/>
+           <result property="loja_pes_id" column="loja_pes_id"/>
+           <!--result property="loja_dt_cad" column="loja_dt_cad"/-->
+           <!--result property="loja_dt_alt" column="loja_dt_alt"/-->
+        </association>
+    </resultMap>
+
+</mapper>
