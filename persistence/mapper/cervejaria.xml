@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="cervejaria">
+
+    <insert id="add" useGeneratedKeys="true" keyProperty="cer_id" keyColumn="cer_id">
+        insert 
+        into cervejaria
+        (cer_nome,cer_endereco,cer_tipo,cer_cp_producao,cer_dt_fundacao)
+        values
+        (#{cer_nome},#{cer_endereco},#{cer_tipo},#{cer_cp_producao},#{cer_dt_fundacao})
+    </insert>
+	
+    <update id="update">
+        update 
+        cervejaria
+        set
+        cer_nome = #{cer_nome}
+        ,cer_endereco = #{cer_endereco}
+        ,cer_tipo = #{cer_tipo}
+        ,cer_cp_producao = #{cer_cp_producao}
+        ,cer_dt_fundacao = #{cer_dt_fundacao}
+        where 
+        cer_id = #{cer_id}
+    </update>
+	
+    <delete id="delete">
+        delete
+        from cervejaria
+        where
+        cer_id = #{cer_id}
+    </delete>
+	
+    <select id="find" resultMap="cervejaria">
+        select
+        *
+        from
+        cervejaria
+        <where>
+            <if test="cer_id != null">
+                cer_id = #{cer_id}
+            </if>
+        </where>
+    </select>
+	
+    <resultMap id="cervejaria" type="Map">
+        <!--id column="cer_id" property="cer_id" javaType="int"/-->
+        <!--result property="cer_nome" column="cer_nome" javaType="string"/-->
+    </resultMap>
+
+</mapper>

@@ -1,0 +1,113 @@
+  /cervejaria:
+    get:
+      summary: get cervejaria
+      repository: cervejaria.selectList.find
+      description: 
+      parameters:
+       - 
+         name: cer_id
+         in: query
+         type: integer
+         format: int64
+         description: identificador da cervejaria
+      responses:
+       '200':
+         description: Cervejaria Object
+         schema:
+           type: array
+           items:
+             $ref: '#/definitions/cervejaria'
+       default:
+         description: Unexpected Error
+         schema:
+           $ref: '#/definitions/Error'
+    post:
+      summary: add cervejaria
+      repository: cervejaria.insert.add
+      description:
+      parameters:
+       - 
+         name: cervejaria
+         in: body
+         schema:
+          $ref: '#/definitions/cervejaria'
+         description: objeto cervejaria
+      responses:
+       '200':
+         description: sucessfull !
+       default:
+         description: Unexpected Error
+         schema:
+           $ref: '#/definitions/Error'
+    put:
+      summary: alter cervejaria
+      repository: cervejaria.update.update
+      description:
+      parameters:
+       - 
+         name: cervejaria
+         in: body
+         schema:
+          $ref: '#/definitions/cervejaria'
+         description: objeto cervejaria
+      responses:
+       '200':
+         description: sucessfull !
+       default:
+         description: Unexpected Error
+         schema:
+           $ref: '#/definitions/Error'
+    delete:
+      summary: delete cervejaria
+      repository: cervejaria.delete.delete
+      description:
+      parameters:
+       - 
+         name: cer_id
+         in: query
+         type: integer
+         format: int64
+         description: identificador da cervejaria   
+      responses:
+       '200':
+         description: sucessfull !
+       default:
+         description: Unexpected Error
+         schema:
+           $ref: '#/definitions/Error'
+      
+  definitions:
+   Error:
+     type: "object"
+     properties:
+       code:
+        type: integer
+        format: int32
+        description: error code
+       description:
+        type: string
+        description: error description
+   cervejaria:
+     type: "object"
+     properties:
+       cer_id:
+        type: integer
+        format: int64
+        description: identificador da cervejaria
+       cer_nome:
+        type: string
+        decription: nome formal ou razao social
+       cer_endereco:
+        type: string
+        decription: edereco da sede
+       cer_tipo:
+        type: string
+        decription: tipo da cerveja
+       cer_cp_producao:
+        type: integer
+        format: int64
+        decription: capacidade de produçao
+       cer_dt_fundacao:
+        type: string
+        format: date
+        decription: data de fundação
